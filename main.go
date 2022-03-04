@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
 
 	"net/http"
@@ -70,7 +71,7 @@ func main() {
 	}
 
 	stopChan := make(chan os.Signal, 5)
-	signal.Notify(stopChan, os.Interrupt, os.Kill)
+	signal.Notify(stopChan, os.Interrupt, syscall.SIGTERM)
 
 	go func() {
 		setTemps(read)
