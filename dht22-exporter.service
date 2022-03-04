@@ -1,0 +1,11 @@
+[Unit]
+Description=dht22 prometheus exporter
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/main
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=default.target
