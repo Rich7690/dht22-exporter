@@ -41,7 +41,7 @@ var (
 )
 
 func doSelfUpdate() {
-	// selfupdate.EnableLog() enable when debug logging is needed
+	// selfupdate.EnableLog() // enable when debug logging is needed
 	v := semver.MustParse(version)
 
 	if DisableUpdate {
