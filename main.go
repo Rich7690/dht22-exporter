@@ -108,6 +108,7 @@ func main() {
 	go func() {
 		log.Println("Listening on port 8001")
 		http.Handle("/metrics", promhttp.Handler())
+		http.Handle("/health", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusOK) }))
 		err = http.ListenAndServe(":8001", nil)
 		if err != http.ErrServerClosed {
 			fmt.Println(err)
