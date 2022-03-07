@@ -3,12 +3,11 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
-
-	"net/http"
 
 	"github.com/MichaelS11/go-dht"
 
@@ -54,6 +53,8 @@ func doSelfUpdate() {
 	} else {
 		log.Println("Successfully updated to version", latest.Version)
 		log.Println("Release note:\n", latest.ReleaseNotes)
+		log.Println("Exiting.")
+		os.Exit(0)
 	}
 }
 
