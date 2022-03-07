@@ -19,8 +19,9 @@ import (
 )
 
 var (
-	version string
-	commit  string
+	version       string = "0.0.0"
+	commit        string
+	DisableUpdate bool = os.Getenv("DISABLE_UPDATE") == "true"
 )
 
 var (
@@ -40,7 +41,24 @@ var (
 )
 
 func doSelfUpdate() {
+	// selfupdate.EnableLog() enable when debug logging is needed
 	v := semver.MustParse(version)
+
+	if DisableUpdate {
+		latest, found, err := selfupdate.DetectLatest("rtdev7690/dht22-exporter")
+		if err != nil {
+			log.Printf("Error finding latest version: %v\n", err)
+			return
+		}
+		if found {
+			log.Println("Found latest version: ", latest)
+		} else {
+			log.Println("Couldn't find latest version")
+		}
+
+		return
+	}
+
 	latest, err := selfupdate.UpdateSelf(v, "rtdev7690/dht22-exporter")
 	if err != nil {
 		log.Println("Binary update failed:", err)
