@@ -12,9 +12,11 @@ import (
 
 	"github.com/MichaelS11/go-dht"
 
+	"github.com/blang/semver"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/rhysd/go-github-selfupdate/selfupdate"
 )
 
 var (
@@ -38,6 +40,23 @@ var (
 	GPIO = os.Getenv("GPIO")
 )
 
+func doSelfUpdate() {
+	v := semver.MustParse(version)
+	latest, err := selfupdate.UpdateSelf(v, "rtdev7690/dht22-exporter")
+	if err != nil {
+		log.Println("Binary update failed:", err)
+		return
+	}
+	log.Println("Latest version: ", latest.Version)
+	if latest.Version.Equals(v) {
+		// latest version is the same as current version. It means current binary is up to date.
+		log.Println("Current binary is the latest version", version)
+	} else {
+		log.Println("Successfully updated to version", latest.Version)
+		log.Println("Release note:\n", latest.ReleaseNotes)
+	}
+}
+
 func setTemps(read *dht.DHT) {
 	timer := prometheus.NewTimer(gatheringDuration)
 	defer timer.ObserveDuration()
@@ -53,6 +72,7 @@ func setTemps(read *dht.DHT) {
 func main() {
 	log.Println("Version: " + version)
 	log.Println("Commit: " + commit)
+	doSelfUpdate()
 	if GPIO == "" {
 		log.Println("Invalid GPIO pin")
 		GPIO = "GPIO27"
