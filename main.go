@@ -42,7 +42,10 @@ var (
 func doSelfUpdate() {
 	selfupdate.SetLogger(log.Default()) // enable when debug logging is needed
 	updater, err := selfupdate.NewUpdater(selfupdate.Config{Validator: &selfupdate.ChecksumValidator{UniqueFilename: "checksums.txt"}})
-	log.Printf("Error finding latest version: %v\n", err)
+	if err != nil {
+		log.Printf("Error creating updater: %v\n", err)
+		return
+	}
 	if DisableUpdate {
 		latest, found, err := updater.DetectLatest("rtdev7690/dht22-exporter")
 		if err != nil {
