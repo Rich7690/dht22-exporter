@@ -11,11 +11,10 @@ import (
 
 	"github.com/MichaelS11/go-dht"
 
-	"github.com/blang/semver"
+	"github.com/creativeprojects/go-selfupdate"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/rhysd/go-github-selfupdate/selfupdate"
 )
 
 var (
@@ -41,11 +40,11 @@ var (
 )
 
 func doSelfUpdate() {
-	// selfupdate.EnableLog() // enable when debug logging is needed
-	v := semver.MustParse(version)
-
+	selfupdate.SetLogger(log.Default()) // enable when debug logging is needed
+	updater, err := selfupdate.NewUpdater(selfupdate.Config{Validator: &selfupdate.ChecksumValidator{UniqueFilename: "checksums.txt"}})
+	log.Printf("Error finding latest version: %v\n", err)
 	if DisableUpdate {
-		latest, found, err := selfupdate.DetectLatest("rtdev7690/dht22-exporter")
+		latest, found, err := updater.DetectLatest("rtdev7690/dht22-exporter")
 		if err != nil {
 			log.Printf("Error finding latest version: %v\n", err)
 			return
@@ -59,17 +58,17 @@ func doSelfUpdate() {
 		return
 	}
 
-	latest, err := selfupdate.UpdateSelf(v, "rtdev7690/dht22-exporter")
+	latest, err := updater.UpdateSelf(version, "rtdev7690/dht22-exporter")
 	if err != nil {
 		log.Println("Binary update failed:", err)
 		return
 	}
-	log.Println("Latest version: ", latest.Version)
-	if latest.Version.Equals(v) {
+	log.Println("Latest version: ", latest.Version())
+	if latest.Equal(version) {
 		// latest version is the same as current version. It means current binary is up to date.
 		log.Println("Current binary is the latest version", version)
 	} else {
-		log.Println("Successfully updated to version", latest.Version)
+		log.Println("Successfully updated to version", latest.Version())
 		log.Println("Release note:\n", latest.ReleaseNotes)
 		log.Println("Exiting.")
 		os.Exit(0)
