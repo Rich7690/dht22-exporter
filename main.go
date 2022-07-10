@@ -47,7 +47,7 @@ func doSelfUpdate() {
 		return
 	}
 	if DisableUpdate {
-		latest, found, err := updater.DetectLatest("rtdev7690/dht22-exporter")
+		latest, found, err := updater.DetectLatest("rich7690/dht22-exporter")
 		if err != nil {
 			log.Printf("Error finding latest version: %v\n", err)
 			return
@@ -61,7 +61,7 @@ func doSelfUpdate() {
 		return
 	}
 
-	latest, err := updater.UpdateSelf(version, "rtdev7690/dht22-exporter")
+	latest, err := updater.UpdateSelf(version, "rich7690/dht22-exporter")
 	if err != nil {
 		log.Println("Binary update failed:", err)
 		return
